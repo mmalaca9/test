@@ -1,1 +1,13 @@
+name: Welcome Message
 
+on:
+  pull_request:
+    types: [opened]
+  issues:
+    types: [opened]
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Welcome message
+        run: echo "Witaj! Dziękujemy za udział w projekcie."
