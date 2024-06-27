@@ -1,0 +1,42 @@
+name: Test and Notify
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Przykładowe kroki do testowania przy użyciu Selenium
+      - name: Run Selenium tests
+        run: |
+          npm run test:selenium  # Przykładowe polecenie do uruchomienia testów Selenium
+
+      # Powiadomienie o wynikach testów na Slacku
+      - name: Notify on Slack
+        if: ${{ always() }}
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_CHANNEL: general  # Kanał Slack do powiadomienia
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          mention: here
+          fields: test
+          message: |
+            Test results for branch: ${{ github.head_ref }}
+            - Status: ${{ job.status }}
+            - Commit: ${{ github.sha }}
