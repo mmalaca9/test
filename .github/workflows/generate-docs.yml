@@ -1,0 +1,29 @@
+name: Generate Documentation
+
+on:
+  push:
+    branches:
+      - main  # lub główna gałąź Twojego repozytorium
+
+jobs:
+  generate_docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Doxygen
+        run: sudo apt-get install -y doxygen
+
+      - name: Generate Documentation
+        run: doxygen Doxyfile  # nazwa pliku konfiguracyjnego Doxygen
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          git add .
+          git commit -m "Auto-generated documentation"
+          git push
