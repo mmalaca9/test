@@ -1,0 +1,23 @@
+name: Build on Production Server
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Przykładowe kroki do budowania na serwerze produkcyjnym
+      - name: Deploy to production
+        if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master'
+        run: |
+          # Tutaj umieść skrypty lub polecenia do budowania na serwerze produkcyjnym
+          echo "Building application on production server..."
+          # Przykładowe polecenia do uruchomienia budowania
+          # ./deploy.sh
+          # docker-compose up -d
