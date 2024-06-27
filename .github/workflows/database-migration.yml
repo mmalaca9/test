@@ -1,0 +1,38 @@
+name: Database Migration and Configuration
+
+on:
+  push:
+    branches:
+      - master  # Uruchom workflow tylko po zatwierdzeniu zmian na gałęzi master
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Przykładowe kroki do migracji bazy danych i konfiguracji na serwerze produkcyjnym
+      - name: Set up SSH keys
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: SSH into production server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: ${{ secrets.PRODUCTION_SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PRODUCTION_SERVER_PORT }}
+
+      - name: Execute migration script
+        run: |
+          cd /path/to/your/app
+          ./scripts/migrate-db.sh  # Przykładowy skrypt do migracji bazy danych
+
+      - name: Execute configuration script
+        run: |
+          cd /path/to/your/app
+          ./scripts/configure-app.sh  # Przykładowy skrypt do konfiguracji aplikacji
