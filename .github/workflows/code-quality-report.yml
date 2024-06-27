@@ -1,0 +1,27 @@
+name: Code Quality Report
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  code_quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Przykładowe narzędzie do analizy jakości kodu - ESLint
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint -- --format=json > eslint-report.json
+
+      # Udostępnianie raportu jako artefakt
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v2
+        with:
+          name: eslint-report
+          path: eslint-report.json
