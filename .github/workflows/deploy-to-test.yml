@@ -1,0 +1,30 @@
+name: Deploy to Test Environment
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Przykładowe kroki do wdrożenia (np. Docker)
+      - name: Build and push Docker image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          docker build -t myapp:${{ github.sha }} .
+          docker tag myapp:${{ github.sha }} mydockerhub/myapp:latest
+          docker push mydockerhub/myapp:latest
+
+      # Możesz dodać kroki do uruchomienia kontenera, wypchnięcia do Kubernetes, itp.
+
+      # Przykładowy krok do powiadomienia o wdrożeniu
+      - name: Notify deployment
+        run: echo "Deployed latest version to test environment."
