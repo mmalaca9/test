@@ -1,0 +1,37 @@
+name: Add Labels to PR
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]  # Uruchamia akcję przy otwarciu nowego PR, ponownym otwarciu lub synchronizacji
+
+jobs:
+  add_labels:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Add labels based on PR content
+        run: |
+          LABELS=""
+          # Analiza zawartości PR i dodawanie odpowiednich etykiet
+          if grep -iq "fix" $GITHUB_EVENT_PATH; then
+            LABELS+="bug,"
+          fi
+          if grep -iq "feature" $GITHUB_EVENT_PATH; then
+            LABELS+="enhancement,"
+          fi
+          if grep -iq "documentation" $GITHUB_EVENT_PATH; then
+            LABELS+="documentation,"
+          fi
+
+          # Usunięcie ostatniego przecinka z listy etykiet
+          LABELS=$(echo $LABELS | sed 's/,$//')
+
+          # Dodanie etykiet do PR
+          echo "Adding labels: $LABELS"
+          echo "::set-output name=LABELS::$LABELS"
+          if [ -n "$LABELS" ]; then
+            curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/${GITHUB_REPOSITORY}/issues/${{ github.event.number }}/labels" -d "{\"labels\":[\"$LABELS\"]}"
+          fi
